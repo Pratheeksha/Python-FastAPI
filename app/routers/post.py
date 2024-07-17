@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from .. import models, schemas, oauth2
 from ..database import get_db
 from typing import List, Optional
+from sqlalchemy import func
 
 router = APIRouter(
     prefix="/posts",
@@ -10,22 +11,28 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.PostOut])
 def get_posts(db: Session = Depends(get_db), current_user: str = Depends(oauth2.get_current_user),
               limit: int = 100, skip: int = 0, search: Optional[str] = ""):
-    posts = db.query(models.Post).filter(
-        models.Post.owner_id == current_user.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
-    return posts
+    # posts = db.query(models.Post).filter(
+    #     models.Post.owner_id == current_user.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+
+    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+        models.Vote, models.Post.id ==
+        models.Vote.post_id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    return result
 
 
-@router.get("/{id}", response_model=schemas.Post)
+@router.get("/{id}", response_model=schemas.PostOut)
 def get_post(id: int, db: Session = Depends(get_db), current_user: str = Depends(oauth2.get_current_user)):
-    post = db.query(models.Post).filter(models.Post.id ==
-                                        id).first()
+    post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+        models.Vote, models.Post.id ==
+        models.Vote.post_id, isouter=True).group_by(models.Post.id).filter(models.Post.id ==
+                                                                           id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id {id} was not found")
-    if post.owner_id != current_user.id:
+    if post.Post.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Not authorized to perform requested action")
     return post
