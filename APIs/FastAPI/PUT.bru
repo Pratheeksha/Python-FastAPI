@@ -1,0 +1,23 @@
+meta {
+  name: PUT
+  type: http
+  seq: 1
+}
+
+put {
+  url: http://{{baseurl}}/posts/3
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+      "title" : "Welcome to the Alps",
+      "content" : "So beautiful",
+      "published" : true
+  }
+}

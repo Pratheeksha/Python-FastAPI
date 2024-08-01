@@ -1,0 +1,28 @@
+meta {
+  name: CREATE POST
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{baseurl}}/posts
+  body: json
+  auth: bearer
+}
+
+headers {
+  Authentication: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+      "title" : "Welcome to DisneyLand",
+      "content" : "So much fun",
+      "published" : true,
+    "owner_id":1
+  }
+}

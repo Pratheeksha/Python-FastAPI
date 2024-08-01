@@ -1,0 +1,25 @@
+meta {
+  name: GET POSTS
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{baseurl}}/posts?limit=5&skip=2&search=Welcome%20to
+  body: none
+  auth: bearer
+}
+
+params:query {
+  limit: 5
+  skip: 2
+  search: Welcome%20to
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+vars:pre-request {
+  : 
+}

@@ -1,0 +1,30 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{baseurl}}/login?username=mark@gmail.com&password=Pyhton1234
+  body: multipartForm
+  auth: none
+}
+
+params:query {
+  username: mark@gmail.com
+  password: Pyhton1234
+}
+
+body:multipart-form {
+  username: mark@gmail.com
+  password: Pyhton1234
+}
+
+vars:pre-request {
+  password: Pyhton1234
+}
+
+script:post-response {
+  let data = res.getBody();
+  bru.setEnvVar("access_token",data.access_token);
+}

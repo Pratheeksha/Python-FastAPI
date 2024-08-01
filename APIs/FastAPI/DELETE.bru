@@ -1,0 +1,15 @@
+meta {
+  name: DELETE
+  type: http
+  seq: 1
+}
+
+delete {
+  url: http://127.0.0.1:8000/posts/4
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
